@@ -127,7 +127,6 @@ N = 30000
 S = np.zeros((n_steps, N))
 S[0] = S_0
 print('S is ', S[0])
-
 for t in range(1, n_steps):
     # Draw random values to simulate Brownian motion
     Z = np.random.standard_normal(N)
@@ -135,14 +134,40 @@ for t in range(1, n_steps):
                              dt + (sigma * np.sqrt(dt) * Z))
 # Sum and discount values
 C = np.exp(-r * T) * 1 / N * np.sum(np.maximum(S[-1] - K, 0))
+P = np.exp(-r * T) * 1 / N * np.sum(np.maximum(K - S[-1], 0))
+CAON = []; PAON=[]
+for i in range(1, N):
+ if S[-1,i]>=K :
+    CAON.append(S[-1,i])
+ else:
+    PAON.append(S[-1,i])
+CA = np.exp(-r * T) * 1 / N * np.sum(CAON)
+PA = np.exp(-r * T) * 1 / N * np.sum(PAON)
+
+CCON = []; PCON = []
+for i in range(1, N):
+ if S[-1,i]>=K :
+    CCON.append(K)
+ else:
+    PCON.append(K)
+CC = np.exp(-r * T) * 1 / N * np.sum(CCON)
+PC = np.exp(-r * T) * 1 / N * np.sum(PCON)
+Fo = np.exp(-r * T) * 1 / N * np.sum(S[-1])
+
+
 
 print("Strike price: {:.2f}".format(K_bsm))
 print('difference beteern BSM and MC ', (C-C_bsm))
 print("BSM Option Value Estimate: {:.2f}".format(C_bsm))
 print("Monte Carlo Option Value Estimate: {:.2f}".format(C))
+print("Monte Carlo CAON Option Value Estimate: {:.2f}".format(CA))
+print("Monte Carlo PAON Option Value Estimate: {:.2f}".format(PA))
+print("Monte Carlo CCON Option Value Estimate: {:.2f}".format(CC))
+print("Monte Carlo PCON Option Value Estimate: {:.2f}".format(PC))
+print("Monte Carlo Forward Option Value Estimate: {:.2f}".format(Fo))
 
 plt.figure(figsize=(12,8))
-plt.plot(S[:,0:20])
+plt.plot(S[:,0:1000])
 plt.axhline(K, c="k", xmin=0,
             xmax=n_steps,
            label="Strike Price")
